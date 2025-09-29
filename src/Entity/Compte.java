@@ -1,4 +1,4 @@
 package Entity;
 
-public class Compte {
+public sealed class Compte permits CompteEpargne,CompteCourant {
 }

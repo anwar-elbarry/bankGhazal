@@ -1,4 +1,4 @@
 package Entity;
 
-public class CompteEpargne {
+public final class CompteEpargne extends Compte {
 }
