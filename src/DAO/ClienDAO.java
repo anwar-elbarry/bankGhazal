@@ -3,7 +3,10 @@ package DAO;
 import Entity.Client;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
+import java.util.UUID;
 
 public class ClienDAO {
     private Connection connection;
@@ -23,6 +26,8 @@ public class ClienDAO {
             }
         }
     }
+
+
     public void modifyClient(Client client)throws SQLException {
         String sql = "UPDATE client SET nom = ?, email = ? WHERE id = ?";
         try(PreparedStatement ps = connection.prepareStatement(sql)){
@@ -45,6 +50,24 @@ public class ClienDAO {
                 throw new SQLException("Failed to remove client");
             }
         }
+    }
+
+    public Optional<Client> findClientById(UUID id) throws SQLException{
+        String sql = "SELECT * FROM client WHERE id = ?";
+        try(PreparedStatement ps = connection.prepareStatement(sql)){
+            ps.setObject(1,id);
+            try(ResultSet rs = ps.executeQuery()){
+                if(rs.next()){
+                    Client client = new Client(
+                            rs.getObject("id",UUID.class),
+                            rs.getString("nom"),
+                            rs.getString("email")
+                    );
+                    return Optional.of(client);
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     public void setConnection(Connection connection){
