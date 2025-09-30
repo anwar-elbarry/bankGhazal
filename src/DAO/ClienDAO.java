@@ -12,10 +12,11 @@ public class ClienDAO {
     }
 
     public void addClient(Client client)throws SQLException {
-        String sql = "INSERT INTO client (nom,email) VALUES (?, ?)";
+        String sql = "INSERT INTO client (id,nom,email) VALUES (? ,?, ?)";
         try(PreparedStatement ps = connection.prepareStatement(sql)){
-            ps.setString(1,client.nom());
-            ps.setString(2,client.email());
+            ps.setObject(1,client.id());
+            ps.setString(2,client.nom());
+            ps.setString(3,client.email());
             int result = ps.executeUpdate();
             if(result == 0){
                 throw new SQLException("Failed to add client");
