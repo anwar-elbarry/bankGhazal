@@ -70,9 +70,9 @@ public class CompteDAO {
                    );
                  return Optional.of(compte);
                }
-               return Optional.empty();
            }
         }
+        return Optional.empty();
     }
 
     public void setConnection(Connection connection){
