@@ -1,17 +1,18 @@
 package Entity;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 public sealed class Compte permits CompteEpargne,CompteCourant {
     protected UUID id;
     protected String numero;
-    protected double solde;
+    protected BigDecimal solde;
     protected UUID idClient;
-    public Compte(double solde, UUID idClient) {
+    public Compte(UUID id, String numero, BigDecimal solde, UUID idClient) {
+        setId(id);
+        setNumero(numero);
         setSolde(solde);
         setIdClient(idClient);
-        setId(UUID.randomUUID());
-        setNumero("CP-"+id.toString().substring(0, 6));
     }
 
     public UUID getId() {
@@ -22,11 +23,11 @@ public sealed class Compte permits CompteEpargne,CompteCourant {
         this.id = id;
     }
 
-    public double getSolde() {
+    public BigDecimal getSolde() {
         return solde;
     }
 
-    public void setSolde(double solde) {
+    public void setSolde(BigDecimal solde) {
         this.solde = solde;
     }
 
