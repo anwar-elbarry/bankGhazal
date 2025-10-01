@@ -7,7 +7,7 @@ public final class CompteEpargne extends Compte {
     protected double tauxInteret;
 
     public CompteEpargne(UUID id,String numero,BigDecimal solde, UUID idClient, double tauxInteret) {
-        super(id,numero,solde, idClient);
+        super(id,numero,solde, idClient,TypeCompte.EPARGNE);
         setTauxInteret(tauxInteret);
     }
 

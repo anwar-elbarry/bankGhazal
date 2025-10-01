@@ -8,11 +8,13 @@ public sealed class Compte permits CompteEpargne,CompteCourant {
     protected String numero;
     protected BigDecimal solde;
     protected UUID idClient;
-    public Compte(UUID id, String numero, BigDecimal solde, UUID idClient) {
+    protected TypeCompte typeCompte;
+    public Compte(UUID id, String numero, BigDecimal solde, UUID idClient,TypeCompte typeCompte) {
         setId(id);
         setNumero(numero);
         setSolde(solde);
         setIdClient(idClient);
+        setTypeCompte(typeCompte);
     }
 
     public UUID getId() {
@@ -45,5 +47,11 @@ public sealed class Compte permits CompteEpargne,CompteCourant {
 
     public void setIdClient(UUID idClient) {
         this.idClient = idClient;
+    }
+    public TypeCompte getTypeCompte() {
+        return typeCompte;
+    }
+    public void setTypeCompte(TypeCompte typeCompte) {
+        this.typeCompte = typeCompte;
     }
 }

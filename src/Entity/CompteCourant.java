@@ -7,7 +7,7 @@ public final class CompteCourant extends Compte{
 
     protected double decouvertAutorise;
     public CompteCourant(UUID id, String numero,BigDecimal solde, UUID idClient, double decouvertAutorise) {
-        super(id,numero,solde,idClient);
+        super(id,numero,solde,idClient,TypeCompte.COURANT);
         setDecouvertAutorise(decouvertAutorise);
     }
 
