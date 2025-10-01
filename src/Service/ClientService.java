@@ -5,12 +5,9 @@ import Entity.Client;
 import Utilitaire.Validator;
 
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class ClientService {
-    private Map<UUID,Client>clients = new HashMap<>();
     private ClienDAO clientDAO;
     public ClientService(ClienDAO clientDAO){
         this.clientDAO = clientDAO;
@@ -26,7 +23,6 @@ public class ClientService {
         try {
             Client client = new Client(UUID.randomUUID(),nom,email);
             clientDAO.addClient(client);
-            clients.put(client.id(),client);
         }catch (SQLException e){
             throw new SQLException("Failed to add client :"+e.getMessage());
         }
@@ -42,14 +38,27 @@ public class ClientService {
     }
 
     public void removeClient(Client client)throws SQLException {
-        clientDAO.removeClient(client);
+        try {
+            clientDAO.removeClient(client);
+        }catch (SQLException e){
+            throw new SQLException("Failed to remove client :"+e.getMessage());
+        }
+
     }
 
-    public Map<UUID,Client> findAll()throws SQLException{
+    public List<Client> findAll()throws SQLException{
         try {
            return clientDAO.findAll();
         }catch (SQLException e){
             throw new SQLException("Failed to find all clients :"+e.getMessage());
+        }
+    }
+
+    public Optional<Client> findClientById(String id)throws SQLException{
+        try {
+            return clientDAO.findClientById(id);
+        }catch (SQLException e){
+            throw new SQLException("Failed to find client by id :"+e.getMessage());
         }
     }
 }
