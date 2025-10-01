@@ -66,6 +66,20 @@ public class CompteService {
             throw new SQLException("Failed to find all comptes: " + e.getMessage());
         }
     }
+    public List<Compte> findByClient(Client client) throws SQLException {
+        try {
+            return compteDAO.findByClient(client).get();
+        }catch (SQLException e){
+            throw new SQLException("Failed to find all comptes: " + e.getMessage());
+        }
+    }
+    public Compte findByid(String id) throws SQLException {
+        try {
+            return compteDAO.findById(id).get();
+        }catch (SQLException e){
+            throw new SQLException("Failed to find compte by id: " + e.getMessage());
+        }
+    }
 
     public void setCompteDAO(CompteDAO compteDAO) {
         this.compteDAO = compteDAO;
