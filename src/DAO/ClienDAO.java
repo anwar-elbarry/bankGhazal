@@ -5,8 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class ClienDAO {
     private Connection connection;
@@ -70,6 +69,23 @@ public class ClienDAO {
         return Optional.empty();
     }
 
+    public Map<UUID,Client> findAll() throws SQLException{
+        Map<UUID,Client>clientList = new HashMap<>();
+        String sql = "SELECT * FROM client";
+        try(PreparedStatement ps = connection.prepareStatement(sql)){
+            try(ResultSet rs = ps.executeQuery()){
+                while(rs.next()){
+                    Client client = new Client(
+                            rs.getObject("id",UUID.class),
+                            rs.getString("nom"),
+                            rs.getString("email")
+                    );
+                    clientList.put(client.id(),client);
+                }
+                return clientList;
+            }
+        }
+    }
     public void setConnection(Connection connection){
         this.connection = connection;
     }
