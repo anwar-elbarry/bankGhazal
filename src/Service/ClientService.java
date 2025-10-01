@@ -44,4 +44,12 @@ public class ClientService {
     public void removeClient(Client client)throws SQLException {
         clientDAO.removeClient(client);
     }
+
+    public Map<UUID,Client> findAll()throws SQLException{
+        try {
+           return clientDAO.findAll();
+        }catch (SQLException e){
+            throw new SQLException("Failed to find all clients :"+e.getMessage());
+        }
+    }
 }
