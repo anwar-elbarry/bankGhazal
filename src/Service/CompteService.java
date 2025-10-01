@@ -6,6 +6,7 @@ import Entity.*;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CompteService {
     private CompteDAO compteDAO;
@@ -44,6 +45,8 @@ public class CompteService {
         try{
             if (compte.getSolde().compareTo(BigDecimal.ZERO) < 0){
                 throw new IllegalArgumentException("Solde must be greater than or equal to zero");
+            } else if (compte instanceof CompteCourant && ((CompteCourant)compte).getDecouvertAutorise() < 0){
+                throw new IllegalArgumentException("Decouvert autorise must be greater than or equal to zero");
             }
             compteDAO.modifyCompte(compte);
         }catch (SQLException e){
@@ -79,6 +82,30 @@ public class CompteService {
         }catch (SQLException e){
             throw new SQLException("Failed to find compte by id: " + e.getMessage());
         }
+    }
+    public Compte findByNumero(String numero) throws SQLException {
+        try {
+            return compteDAO.findByNumero(numero).get();
+        }catch (SQLException e){
+            throw new SQLException("Failed to find compte by numero: " + e.getMessage());
+        }
+    }
+
+    public Optional<Compte> maxOUminSolde(String maxOUmin) throws SQLException {
+        try{
+            List<Compte> comptes = compteDAO.findAll();
+            Compte compte;
+        if (Objects.equals(maxOUmin, "MAX")){
+            compte = comptes.stream().max(Comparator.comparing(Compte::getSolde)).get();
+            return Optional.of(compte);
+        }else if (Objects.equals(maxOUmin, "MIN")){
+            compte = comptes.stream().min(Comparator.comparing(Compte::getSolde)).get();
+            return Optional.of(compte);
+        }
+        }catch (SQLException e){
+            throw new SQLException("Failed to find max or min solde: " + e.getMessage());
+        }
+      return Optional.empty();
     }
 
     public void setCompteDAO(CompteDAO compteDAO) {
