@@ -4,10 +4,7 @@ import Entity.Compte;
 import Entity.Transaction;
 import Entity.TypeTransaction;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,13 +17,14 @@ public class TransactionDAO {
     }
 
     public void addTransaction(Transaction transaction) throws SQLException {
-        String sql = "INSERT INTO transaction (id,montant,date,lieu,type,id_compte) VALUES (? ,?, ?, ?, ? ,?)";
+        String sql = "INSERT INTO transaction (id,montant,date,lieu,type,idcompte) VALUES (? ,?, ?, ?, ? ,?)";
         try(PreparedStatement ps = connection.prepareStatement(sql)){
             ps.setObject(1,transaction.id());
             ps.setBigDecimal(2,transaction.montant());
-            ps.setString(3,transaction.lieu());
-            ps.setObject(4,transaction.type());
-            ps.setObject(5,transaction.idCompte());
+            ps.setTimestamp(3, Timestamp.valueOf(transaction.date()));
+            ps.setString(4,transaction.lieu());
+            ps.setString(5,transaction.type().toString());
+            ps.setObject(6,transaction.idCompte());
             int result = ps.executeUpdate();
             if(result == 0){
                 throw new SQLException("Failed to add transaction");
