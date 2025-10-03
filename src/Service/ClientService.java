@@ -21,7 +21,8 @@ public class ClientService {
             throw new IllegalArgumentException("Invalid name");
         }
         try {
-            Client client = new Client(UUID.randomUUID(),nom,email);
+            String id  = UUID.randomUUID().toString();
+            Client client = new Client(id,nom,email);
             clientDAO.addClient(client);
         }catch (SQLException e){
             throw new SQLException("Failed to add client :"+e.getMessage());
@@ -59,6 +60,19 @@ public class ClientService {
             return clientDAO.findClientById(id);
         }catch (SQLException e){
             throw new SQLException("Failed to find client by id :"+e.getMessage());
+        }
+    }
+
+    public Optional<Client> findBynome(String nom)throws SQLException{
+        try {
+            if (nom == null || nom.isEmpty() || !Validator.isValidName(nom)){
+                throw new IllegalArgumentException("invalid name");
+            }
+            List<Client> clients = clientDAO.findAll();
+            Client client = clients.stream().filter(c->c.nom().equals(nom)).findFirst().get();
+            return Optional.of(client);
+        }catch (SQLException e){
+            throw new SQLException("Failed to find client by name :"+e.getMessage());
         }
     }
 }
