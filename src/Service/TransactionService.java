@@ -7,6 +7,7 @@ import Entity.Transaction;
 import Entity.Enum.TypeTransaction;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -56,9 +57,43 @@ public class TransactionService {
         List<Transaction> transactions = transactionDAO.findTransactionByCompte(compte);
         transactions.sort(Comparator.comparing(Transaction::date));
         return transactions;
-    }   public List<Transaction> trieeByClient(Client client) throws SQLException {
+    }
+    public List<Transaction> trieeByClient(Client client) throws SQLException {
         List<Transaction> transactions = transactionDAO.findAll().stream().filter(e -> e.idCompte().equals(client.id())).collect(Collectors.toList());
         transactions.sort(Comparator.comparing(Transaction::date));
         return transactions;
+    }
+
+    public BigDecimal calculerLaMoyenneOuTotal(Client client, Compte compte, String type) throws SQLException {
+        try {
+            // 1. Fetch transactions (once)
+            List<Transaction> transactions = (client != null)
+                    ? transactionDAO.findTransactionByClient(client)
+                    : transactionDAO.findTransactionByCompte(compte);
+
+            if (transactions.isEmpty()) {
+                return BigDecimal.ZERO; // no transactions
+            }
+
+            // 2. Compute based on type
+            switch (type.toLowerCase()) {
+                case "total":
+                    return transactions.stream()
+                            .map(Transaction::montant)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                case "moyenne":
+                    BigDecimal sum = transactions.stream()
+                            .map(Transaction::montant)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                    return sum.divide(BigDecimal.valueOf(transactions.size()), RoundingMode.HALF_UP);
+
+                default:
+                    throw new IllegalArgumentException("Type must be 'total' or 'moyenne'");
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Failed to calculate total or average", e);
+        }
     }
 }
