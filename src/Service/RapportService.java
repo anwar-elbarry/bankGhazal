@@ -75,4 +75,31 @@ public class RapportService {
         }
     }
 
+    public List<Compte> identifyInactiveAccounts(int daysInactive) throws SQLException {
+        try {
+            LocalDateTime cutoffDate = LocalDateTime.now().minusDays(daysInactive);
+            List<Compte> allAccounts = compteDAO.findAll();
+            List<Transaction> allTransactions = transactionDAO.findAll();
+
+            Map<String, LocalDateTime> lastTransactionByAccount = allTransactions.stream()
+                .collect(Collectors.groupingBy(
+                    Transaction::idCompte,
+                    Collectors.mapping(Transaction::date, Collectors.maxBy(Comparator.naturalOrder()))
+                ))
+                .entrySet().stream()
+                .filter(entry -> entry.getValue().isPresent())
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().get()));
+
+            return allAccounts.stream()
+                .filter(compte -> {
+                    LocalDateTime lastTransaction = lastTransactionByAccount.get(compte.getId());
+                    return lastTransaction == null || lastTransaction.isBefore(cutoffDate);
+                })
+                .collect(Collectors.toList());
+
+        } catch (SQLException e) {
+            throw new SQLException("Failed to identify inactive accounts: " + e.getMessage());
+        }
+    }
+
 }
