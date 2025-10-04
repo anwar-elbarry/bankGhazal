@@ -2,7 +2,7 @@ package Entity;
 
 import java.util.UUID;
 
-public record Client(UUID id,String nom,String email) {
+public record Client(String id,String nom,String email) {
     @Override
     public String toString() {
         return "Client{" +

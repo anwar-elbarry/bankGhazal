@@ -1,8 +1,10 @@
 package Entity;
 
+import Entity.Enum.TypeTransaction;
+
+import java.lang.String;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
-public record Transaction(UUID id , BigDecimal montant , LocalDateTime date , String lieu , TypeTransaction type, UUID idCompte) {
+public record Transaction(String id , BigDecimal montant , LocalDateTime date , String lieu , TypeTransaction type, String idCompte) {
 }
