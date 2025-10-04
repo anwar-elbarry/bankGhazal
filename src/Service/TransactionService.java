@@ -9,9 +9,15 @@ import Entity.Enum.TypeTransaction;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -95,5 +101,48 @@ public class TransactionService {
         } catch (SQLException e) {
             throw new SQLException("Failed to calculate total or average", e);
         }
+    }
+
+    public List<Transaction> detecterTransactionsSuspectes(Client client) throws SQLException {
+        List<Transaction> transactions = transactionDAO.findTransactionByClient(client);
+        if (transactions.isEmpty()) {
+            return List.of();
+        }
+
+        BigDecimal highAmountThreshold = new BigDecimal("10000");
+        int frequencyThreshold = 5; // per hour
+        double unusualLocationThreshold = 0.1; // less than 10% of transactions
+
+        Set<Transaction> highAmount = transactions.stream()
+                .filter(t -> t.montant().compareTo(highAmountThreshold) > 0)
+                .collect(Collectors.toSet());
+
+        Map<String, Long> locationCount = transactions.stream()
+                .collect(Collectors.groupingBy(Transaction::lieu, Collectors.counting()));
+        long totalTransactions = transactions.size();
+        Set<String> commonLocations = locationCount.entrySet().stream()
+                .filter(entry -> (double) entry.getValue() / totalTransactions > unusualLocationThreshold)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+        Set<Transaction> unusualLocation = transactions.stream()
+                .filter(t -> !commonLocations.contains(t.lieu()))
+                .collect(Collectors.toSet());
+
+        Set<Transaction> excessiveFrequency = new HashSet<>();
+        for (int i = 0; i < transactions.size() - frequencyThreshold + 1; i++) {
+            List<Transaction> window = transactions.subList(i, i + frequencyThreshold);
+            LocalDateTime earliest = window.get(0).date();
+            LocalDateTime latest = window.get(frequencyThreshold - 1).date();
+            if (ChronoUnit.HOURS.between(earliest, latest) <= 1) {
+                excessiveFrequency.addAll(window);
+            }
+        }
+
+        Set<Transaction> suspicious = new HashSet<>();
+        suspicious.addAll(highAmount);
+        suspicious.addAll(unusualLocation);
+        suspicious.addAll(excessiveFrequency);
+
+        return new ArrayList<>(suspicious);
     }
 }
