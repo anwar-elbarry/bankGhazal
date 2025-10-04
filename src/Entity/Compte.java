@@ -1,15 +1,17 @@
 package Entity;
 
+import Entity.Enum.TypeCompte;
+
+import java.lang.String;
 import java.math.BigDecimal;
-import java.util.UUID;
 
 public sealed class Compte permits CompteEpargne,CompteCourant {
-    protected UUID id;
+    protected String id;
     protected String numero;
     protected BigDecimal solde;
-    protected UUID idClient;
+    protected String idClient;
     protected TypeCompte typeCompte;
-    public Compte(UUID id, String numero, BigDecimal solde, UUID idClient,TypeCompte typeCompte) {
+    public Compte(String id, String numero, BigDecimal solde, String idClient, TypeCompte typeCompte) {
         setId(id);
         setNumero(numero);
         setSolde(solde);
@@ -17,11 +19,11 @@ public sealed class Compte permits CompteEpargne,CompteCourant {
         setTypeCompte(typeCompte);
     }
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -41,11 +43,11 @@ public sealed class Compte permits CompteEpargne,CompteCourant {
         this.numero = numero;
     }
 
-    public UUID getIdClient() {
+    public String getIdClient() {
         return idClient;
     }
 
-    public void setIdClient(UUID idClient) {
+    public void setIdClient(String idClient) {
         this.idClient = idClient;
     }
     public TypeCompte getTypeCompte() {
@@ -53,5 +55,15 @@ public sealed class Compte permits CompteEpargne,CompteCourant {
     }
     public void setTypeCompte(TypeCompte typeCompte) {
         this.typeCompte = typeCompte;
+    }
+
+    @Override
+    public String toString() {
+        return "Compte{ " +
+                "numero = " + numero +
+                ", solde = " + solde +
+                ", idClient = " + idClient +
+                ", typeCompte = " + typeCompte +
+                '}';
     }
 }
