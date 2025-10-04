@@ -16,7 +16,7 @@ public class ClienDAO {
     public void addClient(Client client)throws SQLException {
         String sql = "INSERT INTO client (id,nom,email) VALUES (? ,?, ?)";
         try(PreparedStatement ps = connection.prepareStatement(sql)){
-            ps.setObject(1,client.id());
+            ps.setString(1,client.id());
             ps.setString(2,client.nom());
             ps.setString(3,client.email());
             int result = ps.executeUpdate();
@@ -43,7 +43,7 @@ public class ClienDAO {
     public void removeClient(Client client)throws SQLException {
         String sql = "DELETE FROM client WHERE id = ?";
         try(PreparedStatement ps = connection.prepareStatement(sql)){
-            ps.setObject(1,client.id());
+            ps.setString(1,client.id());
             int result = ps.executeUpdate();
             if(result == 0){
                 throw new SQLException("Failed to remove client");
@@ -51,14 +51,13 @@ public class ClienDAO {
         }
     }
 
-    public Optional<Client> findClientById(UUID id) throws SQLException{
+    public Optional<Client> findClientById(String id) throws SQLException{
         String sql = "SELECT * FROM client WHERE id = ?";
-        try(PreparedStatement ps = connection.prepareStatement(sql)){
-            ps.setObject(1,id);
+        try(PreparedStatement ps = connection.prepareStatement(sql)){            ps.setString(1,id);
             try(ResultSet rs = ps.executeQuery()){
                 if(rs.next()){
                     Client client = new Client(
-                            rs.getObject("id",UUID.class),
+                            rs.getString("id"),
                             rs.getString("nom"),
                             rs.getString("email")
                     );
@@ -69,18 +68,18 @@ public class ClienDAO {
         return Optional.empty();
     }
 
-    public Map<UUID,Client> findAll() throws SQLException{
-        Map<UUID,Client>clientList = new HashMap<>();
+    public List<Client> findAll() throws SQLException{
+        List<Client>clientList = new ArrayList<>();
         String sql = "SELECT * FROM client";
         try(PreparedStatement ps = connection.prepareStatement(sql)){
             try(ResultSet rs = ps.executeQuery()){
                 while(rs.next()){
                     Client client = new Client(
-                            rs.getObject("id",UUID.class),
+                            rs.getString("id"),
                             rs.getString("nom"),
                             rs.getString("email")
                     );
-                    clientList.put(client.id(),client);
+                        clientList.add(client);
                 }
                 return clientList;
             }
