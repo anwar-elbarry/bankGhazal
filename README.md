@@ -103,11 +103,10 @@ Le projet suit une **architecture en couches** (Layered Architecture) :
 
 ## 🔧 Prérequis
 
-- **Java JDK** 17 ou supérieur
-- **PostgreSQL** 12 ou supérieur
+- **Java JDK** 17 
+- **PostgreSQL** 12 
 - **JDBC Driver** pour PostgreSQL
-- **IDE** (IntelliJ IDEA, Eclipse, ou VS Code)
-- **Git** (optionnel)
+- **IDE** (IntelliJ IDEA)
 
 ---
 
@@ -116,7 +115,7 @@ Le projet suit une **architecture en couches** (Layered Architecture) :
 ### 1. Cloner le Projet
 
 ```bash
-git clone https://github.com/votre-username/bankGhazal.git
+git clone https://github.com/anwar-elbarry/bankGhazal.git
 cd bankGhazal
 ```
 
