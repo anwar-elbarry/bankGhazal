@@ -2,8 +2,11 @@ package DAO;
 
 import Entity.Client;
 import Entity.Compte;
+import Entity.CompteCourant;
+import Entity.CompteEpargne;
 import Entity.Enum.TypeCompte;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,6 +21,23 @@ public class CompteDAO {
 
     public CompteDAO(Connection connection){
         setConnection(connection);
+    }
+
+
+    private Compte createCompteFromResultSet(ResultSet result) throws SQLException {
+        String id = result.getString("id");
+        String numero = result.getString("numero");
+        BigDecimal solde = result.getBigDecimal("solde");
+        String idClient = result.getString("idclient");
+        String typeCompte = result.getString("typecompte");
+        double decouvertAutorise = result.getDouble("decouvertautorise");
+        double tauxInteret = result.getDouble("tauxinteret");
+
+        if (typeCompte.equals("COURANT")) {
+            return new CompteCourant(id, numero, solde, idClient, decouvertAutorise);
+        } else {
+            return new CompteEpargne(id, numero, solde, idClient, tauxInteret);
+        }
     }
 
 
@@ -82,7 +102,7 @@ public class CompteDAO {
         }
     }
     public Optional<List<Compte>> findByClient(Client client)throws SQLException{
-        String sql = "SELECT * FROM compte WHERE id_client = ?";
+        String sql = "SELECT * FROM compte WHERE idclient = ?";
         try(PreparedStatement ps = connection.prepareStatement(sql)){
             ps.setObject(1,client.id());
            try(ResultSet result = ps.executeQuery()){
