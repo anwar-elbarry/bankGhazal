@@ -102,4 +102,39 @@ public class RapportService {
         }
     }
 
+    public List<Transaction> identifySuspiciousTransactions() throws SQLException {
+        try {
+            List<Transaction> allTransactions = transactionDAO.findAll();
+
+            BigDecimal highAmountThreshold = new BigDecimal("10000");
+            int rapidTransactionCount = 5;
+            long rapidTransactionMinutes = 60;
+
+            List<Transaction> suspicious = allTransactions.stream()
+                .filter(t -> t.montant().compareTo(highAmountThreshold) > 0)
+                .collect(Collectors.toList());
+
+            allTransactions.sort(Comparator.comparing(Transaction::date));
+            for (int i = 0; i < allTransactions.size() - rapidTransactionCount + 1; i++) {
+                List<Transaction> window = allTransactions.subList(i, i + rapidTransactionCount);
+                String accountId = window.get(0).idCompte();
+
+                boolean sameAccount = window.stream().allMatch(t -> t.idCompte().equals(accountId));
+                if (sameAccount) {
+                    LocalDateTime earliest = window.get(0).date();
+                    LocalDateTime latest = window.get(rapidTransactionCount - 1).date();
+                    long minutesBetween = java.time.temporal.ChronoUnit.MINUTES.between(earliest, latest);
+
+                    if (minutesBetween <= rapidTransactionMinutes) {
+                        suspicious.addAll(window);
+                    }
+                }
+            }
+
+            return suspicious.stream().distinct().collect(Collectors.toList());
+
+        } catch (SQLException e) {
+            throw new SQLException("Failed to identify suspicious transactions: " + e.getMessage());
+        }
+    }
 }
