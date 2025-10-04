@@ -1,13 +1,15 @@
 package Entity;
 
+import Entity.Enum.TypeCompte;
+
 import java.math.BigDecimal;
-import java.util.UUID;
+
 
 public final class CompteCourant extends Compte{
 
     protected double decouvertAutorise;
-    public CompteCourant(UUID id, String numero,BigDecimal solde, UUID idClient, double decouvertAutorise) {
-        super(id,numero,solde,idClient,TypeCompte.COURANT);
+    public CompteCourant(String id, String numero,BigDecimal solde, String idClient, double decouvertAutorise) {
+        super(id,numero,solde,idClient, TypeCompte.COURANT);
         setDecouvertAutorise(decouvertAutorise);
     }
 
